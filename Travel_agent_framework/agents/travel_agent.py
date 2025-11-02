@@ -1,0 +1,1 @@
+from travel_agent_tools.hotel_tool import Hotel
