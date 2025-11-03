@@ -25,7 +25,7 @@ from fairlib import (
 # --- Step 2: Import the additiojnal tools we want this agent to use ---
 # NOTE: SafeCalculatorTool is a built-in tool while AdvancedCalculusTool 
 # is a tool we built to extend beyond our basic built-in tools.
-
+from hotel_tool import HotelTool
 from flight_tool import FlightTool
 
 async def main():
@@ -37,15 +37,17 @@ async def main():
 
     # === (a) Brain: Language Model ===
     # Uses dolphin3-qwen25-3b for reasoning and decision making
-    llm = HuggingFaceAdapter("dolphin3-qwen25-3b", auth_token="")
+    llm = HuggingFaceAdapter("dolphin3-qwen25-3b", auth_token=)
     
     # === (b) Toolbelt: Register both calculator and calculus tools ===
     tool_registry = ToolRegistry()
 
     flight_tool = FlightTool()
+    hotel_tool = HotelTool()
 
     # Register tools with the registry
     tool_registry.register_tool(flight_tool)
+    tool_registry.register_tool(hotel_tool)
 
     print(f"✅ Registered tools: {[tool.name for tool in tool_registry.get_all_tools().values()]}")
 

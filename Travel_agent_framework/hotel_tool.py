@@ -3,6 +3,10 @@ import json
 from fairlib.core.interfaces.tools import AbstractTool
 
 class HotelTool(AbstractTool):
+    def __init__(self):
+        super().__init__()
+        self.token = self.get_auth_token()
+
     name = "hotel_search_tool"
     description = (
         "A tool for finding hotels."
@@ -36,7 +40,7 @@ class HotelTool(AbstractTool):
         base_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city"
         
         # Gather user input
-        cityCode = hotelInfo["CITY"].strip().upper()
+        cityCode = hotelInfo["CITYCODE"].strip().upper()
         ratings = hotelInfo["RATINGS"].strip().upper()
 
         # Optional: you could also let users specify returnDate, adults, etc.
@@ -46,16 +50,16 @@ class HotelTool(AbstractTool):
         }
 
         # Replace this with your real token
-        token = self.get_auth_token()
+        
         headers = {
-            "Authorization": "Bearer " + token
+            "Authorization": "Bearer " + self.token
         }
 
         try:
             response = requests.get(base_url, headers=headers, params=params)
             response.raise_for_status()
             data = response.json()
-            return json.dumps(data)
+            return data
         
         except requests.exceptions.RequestException as e:
             return(f"API request failed: {e}")
@@ -66,13 +70,13 @@ class HotelTool(AbstractTool):
         # Gather user input
         hotel_ids = ",".join(hotelIDs)
         adults = hotelInfo["ADULTS"].strip()
-        checkInDate = hotelInfo["CHECKIN"].strip()
-        checkOutDate = hotelInfo["CHECKOUT"].strip()
-        priceRange = hotelInfo["PRICE"].strip()
+        checkInDate = hotelInfo["CHECKINDATE"].strip()
+        checkOutDate = hotelInfo["CHECKOUTDATE"].strip()
+        priceRange = hotelInfo["PRICERANGE"].strip()
 
         # Optional: you could also let users specify returnDate, adults, etc.
         params = {
-            "hotelIds": hotel_ids,
+            "hotelIds": hotelIDs[0:5],
             "adults": adults,
             "checkInDate": checkInDate,
             "checkOutDate": checkOutDate,
@@ -81,21 +85,24 @@ class HotelTool(AbstractTool):
         }
 
         # Replace this with your real token
-        token = self.get_auth_token()
         headers = {
-            "Authorization": "Bearer " + token
+            "Authorization": "Bearer " + self.token
         }
 
+        r = requests.get(base_url, headers=headers, params=params)
+
+        print("REQUEST URL:", r.url)
+        print("STATUS:", r.status_code)
+        print("RESPONSE BODY:", r.text)
+
         try:
-            response = requests.get(base_url, headers=headers, params=params)
-            response.raise_for_status()
-            data = response.json()
-
-            return json.dumps(data)
-        except requests.exceptions.RequestException as e:
-            return(f"API request failed: {e}")
-
+            r.raise_for_status()
+            data = r.json()
+            print(json.dumps(data, indent=2))
+        except requests.exceptions.HTTPError as e:
+            # show the server error body to reason about the 400
+            print(f"API error: {e}")
 
 tool = HotelTool()
-out = tool.use('{"cityCode": "PAR", "ratings": "3,4,5", "adults": "2", "checkInDate": "2025-11-05", "checkOutDate": "2025-11-10", "priceRange": "200-300"}\n')
+out = tool.use('{"cityCode": "BOS", "ratings": "3,4,5", "adults": "2", "checkInDate": "2025-11-10", "checkOutDate": "2025-11-13", "priceRange": "200"}')
 print(out)

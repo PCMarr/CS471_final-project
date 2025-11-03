@@ -80,6 +80,3 @@ class FlightTool(AbstractTool):
             return(f"API request failed: {e}")
 
 
-tool = FlightTool()
-out = tool.use('{"Origin": "DEN", "Destination": "MCO",  "Departure": "2025-11-20", "Max_Price": "600"}')
-print(out)
