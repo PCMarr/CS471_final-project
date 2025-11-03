@@ -103,6 +103,7 @@ class HotelTool(AbstractTool):
             # show the server error body to reason about the 400
             print(f"API error: {e}")
 
-tool = HotelTool()
-out = tool.use('{"cityCode": "BOS", "ratings": "3,4,5", "adults": "2", "checkInDate": "2025-11-10", "checkOutDate": "2025-11-13", "priceRange": "200"}')
-print(out)
+if __name__ == "__main__":
+    tool = HotelTool()
+    out = tool.use('{"cityCode": "BOS", "ratings": "3,4,5", "adults": "2", "checkInDate": "2025-11-10", "checkOutDate": "2025-11-13", "priceRange": "200"}')
+    print(out)
